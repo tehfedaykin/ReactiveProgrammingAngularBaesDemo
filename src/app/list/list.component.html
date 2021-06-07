@@ -1,10 +1,10 @@
 <div class="row sticky-header">
     <div class="col">
-      <h2>Displaying {{displayedVillagers.length}} Villagers</h2>
+      <h2>Displaying {{displayedVillagerCount$ | async}} Villagers</h2>
     </div>
     <div class="col">
         <mat-label>Sort by</mat-label>
-        <mat-select [formControl]="sortOption">
+        <mat-select [formControl]="sortOptionControl">
             <mat-option *ngFor="let sortOption of sortOptions" [value]="sortOption">
             {{sortOption}}
             </mat-option>
@@ -14,7 +14,6 @@
     </mat-form-field> -->
     </div>
     <div class="col">
-      <mat-checkbox class="example-margin" (change)="showFavorites($event)" value="favorite">show favorites</mat-checkbox>
     </div>
     <div class="col">
       <mat-accordion>
@@ -36,26 +35,22 @@
                 {{checkbox}}
             </mat-checkbox>
           </div>
-          <button mat-raised-button (click)="filterList()">Apply Filters</button>
+          <button mat-raised-button (click)="applyFilters()">Apply Filters</button>
 
       </mat-expansion-panel>
       </mat-accordion>
     </div>
     <div class="col">
-      <button mat-raised-button (click)="reset()">Reset</button>
+      <button mat-raised-button #resetButton>Reset</button>
     </div>
 </div>
 <div class="grid">
-    <mat-card class="villager-card" [routerLink]="[villager.id]" *ngFor="let villager of displayedVillagers">
+    <mat-card class="villager-card" [routerLink]="[villager.id]" *ngFor="let villager of displayedVillagers$ | async">
         <mat-card-header>
             <div mat-card-avatar class="header-image" style="background-image: url({{villager.iconUri}})"></div>
             <mat-card-title>{{villager.name['name-USen']}}</mat-card-title>
             <mat-card-subtitle>{{villager.birthdayString}}</mat-card-subtitle>
-            <div class="star" (click)="favoriteVillager($event, villager)">
-              <svg class="villager-star" height="16" viewBox="0 0 16 16" version="1.1" width="16" aria-hidden="true" [ngClass]="{'selected': villager.favorite}">
-                <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"></path>
-              </svg>
-            </div>
+            
         </mat-card-header>
         <mat-card-content>
           <img src="{{villager.imageUri}}" alt="{{villager.name['name-USen']}}">
