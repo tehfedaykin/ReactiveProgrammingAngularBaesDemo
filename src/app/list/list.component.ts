@@ -38,7 +38,7 @@ export class ListComponent implements OnInit, OnDestroy {
       list: Object.values(Hobby)
     }
   ]
-  public sortOption = new FormControl({value: '', disabled: false});
+  public sortOptionControl = new FormControl({value: null, disabled: false});
 
   constructor(private apiService: ApiService) { }
 
@@ -47,7 +47,7 @@ export class ListComponent implements OnInit, OnDestroy {
       this.displayedVillagers = this.villagers = this.sortList(villagers, "name");
     });
 
-    this.sortOption.valueChanges.pipe(
+    this.sortOptionControl.valueChanges.pipe(
       takeUntil(this.unsubscriber$)
     )
     .subscribe((value) => {
@@ -61,8 +61,9 @@ export class ListComponent implements OnInit, OnDestroy {
   }
 
   sortList(list: Villager[], property: VillagerSortOptions): Villager[] {
+    const sortedList = [...list];
     if(property === "birthday") {
-      return list.sort(function(a,b){
+      return sortedList.sort(function(a,b){
         var [dayA, monthA] = a.birthday.split('/');
         var dateA = new Date(2020, parseInt(monthA, 10), parseInt(dayA, 10));
 
@@ -73,7 +74,7 @@ export class ListComponent implements OnInit, OnDestroy {
       });
     }
     else if(property === "name") {
-      return list.sort(function(a, b) {
+      return sortedList.sort(function(a, b) {
         var nameA = a.name['name-USen'].toUpperCase();
         var nameB = b.name['name-USen'].toUpperCase();
   
@@ -87,7 +88,7 @@ export class ListComponent implements OnInit, OnDestroy {
       });
     }
     else {
-      return list.sort(function(a, b) {
+      return sortedList.sort(function(a, b) {
         var nameA = a[property].toUpperCase();
         var nameB = b[property].toUpperCase();
   
@@ -103,24 +104,18 @@ export class ListComponent implements OnInit, OnDestroy {
 
   }
 
-  filterList() {
-    this.accordion.close();
-    const filters = this.checkSelection;
-    this.displayedVillagers = this.villagers.filter((villager: Villager) => {
+  filterList(list: Villager[], filters: VillagerSortOptions[]): Villager[] {
+    return list.filter((villager: Villager) => {
       const villagerVals = Object.values(villager);
       const villagerHasTrait = villagerVals.some(r=> filters.includes(r));
       return villagerHasTrait;
     })
   }
 
-  showFavorites(change: any) {
+  applyFilters() {
     this.accordion.close();
-    if(change.checked) {
-      this.displayedVillagers = this.villagers.filter(villager => villager.favorite);
-    }
-    else {
-      this.filterList();
-    }
+    const filters = this.checkSelection;
+    this.displayedVillagers = this.filterList(this.villagers, filters);
   }
 
   setSort(value: VillagerSortOptions): void {
@@ -132,18 +127,9 @@ export class ListComponent implements OnInit, OnDestroy {
     this.checkSelection  = change.checked ? [...this.checkSelection, checkedValue] : this.checkSelection.filter(item => item !== checkedValue)
   }
 
-  favoriteVillager(event: any, villagerToFav: Villager) {
-    event.stopPropagation();
-    this.villagers = this.villagers.map((villager) => {
-      if(villager.id === villagerToFav.id) {
-        villager.favorite = !villager.favorite;
-      }
-      return villager;
-    });
-  }
-
   reset() {
     this.displayedVillagers = this.villagers;
+    this.sortOptionControl.setValue(null);
     this.checkSelection = [];
     this.checkboxes.forEach((checkbox) => {
       if(checkbox.checked) {
