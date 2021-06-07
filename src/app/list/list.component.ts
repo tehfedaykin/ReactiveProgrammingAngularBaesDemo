@@ -62,13 +62,14 @@ export class ListComponent implements OnInit, OnDestroy {
             checkbox.toggle();
           }
         })
+        this.sortOptionControl.setValue(null);
       })
     );
 
     const sortReset$ = resetEvent$.pipe(
       mapTo(null)
     );
-    const sortOption$ = merge(this.sortOptionControl.valueChanges.pipe(startWith(null)), sortReset$);
+    const sortOption$ = this.sortOptionControl.valueChanges.pipe(startWith(null));
 
     const filterReset$ = resetEvent$.pipe(
       mapTo([])
