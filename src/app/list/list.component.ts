@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from
 import { Villager, Personality, Species, Hobby, VillagerSortOptions, ApiService} from '../api.service';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatExpansionPanel} from '@angular/material/expansion';
-import { MatSelectChange } from '@angular/material/select';
-import { FormControl } from '@angular/forms';import { Observable, Subject } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 interface CheckboxGroup {
