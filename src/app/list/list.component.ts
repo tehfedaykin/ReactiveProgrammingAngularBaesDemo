@@ -1,12 +1,11 @@
-import { Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Villager, Personality, Species, Hobby, VillagerSortOptions, ApiService} from '../api.service';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatExpansionPanel} from '@angular/material/expansion';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, fromEvent, merge, Observable, Subject } from 'rxjs';
-import { map, mapTo, startWith, shareReplay, tap } from 'rxjs/operators';
+import { map, mapTo, startWith, tap, share } from 'rxjs/operators';
 import { MatButton } from '@angular/material/button';
-
 interface CheckboxGroup {
   attribute: VillagerSortOptions,
   list: any
@@ -16,8 +15,7 @@ interface CheckboxGroup {
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss']
 })
-export class ListComponent implements OnInit, OnDestroy {
-  private unsubscriber$ = new Subject<void>();
+export class ListComponent implements OnInit {
   @ViewChild(MatExpansionPanel) accordion!: MatExpansionPanel;
   @ViewChildren(MatCheckbox) checkboxes!: QueryList<MatCheckbox>;
   @ViewChild('resetButton', { static: true }) button!: MatButton;
@@ -51,11 +49,13 @@ export class ListComponent implements OnInit, OnDestroy {
         // we're just pretending this is our initial sort
         return this.sortList(villagers, "name")
       }),
-      shareReplay()
+      // sharing the execution of this call to avoid triggering an http request per subscription
+      share()
     );
     
     const resetEvent$ = fromEvent(this.button._elementRef.nativeElement, 'click').pipe(
       tap(() => {
+        // some gross imperative stuff to perform, but fairly representative of real-world use
         this.checkSelection = [];
         this.checkboxes.forEach((checkbox) => {
           if(checkbox.checked) {
@@ -66,33 +66,35 @@ export class ListComponent implements OnInit, OnDestroy {
       })
     );
 
-    const sortReset$ = resetEvent$.pipe(
-      mapTo(null)
+    const sortOption$ = this.sortOptionControl.valueChanges.pipe(
+        // we need an initial value "nexted" for the combineLatest filter
+        // we could do this by calling `setValue` on our formControl as well.
+        startWith(null)
     );
-    const sortOption$ = this.sortOptionControl.valueChanges.pipe(startWith(null));
 
     const filterReset$ = resetEvent$.pipe(
+        // returning an empty array representing no filters selected
       mapTo([])
     )
-    const filterOptions$ = merge(this.filterOptions$, filterReset$)
 
+    // merging the 'reset' stream with the user selected filterOptions BehaviorSubject.
+    const filterOptions$:Observable<VillagerSortOptions[] |[]> = merge(this.filterOptions$, filterReset$)
+
+    // combining the villagersAPI stream, sortOption stream, and filterOptions stream.
     this.displayedVillagers$ = combineLatest([villagers$, sortOption$, filterOptions$]).pipe(
       map(([villagers, sortOption, filterOption]) => {
+          //returning a modified villagers list depending on sort or filter values
           const sortedList =  sortOption ? this.sortList(villagers, sortOption) : villagers;
           return filterOption.length ? this.filterList(sortedList, filterOption): sortedList
         })
     );
 
+    // using the displayedVillagers observable to always update the number of villagers showing
     this.displayedVillagerCount$ = this.displayedVillagers$.pipe(
       map((villagers) => {
         return villagers.length
       })
     )
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscriber$.next();
-    this.unsubscriber$.complete();
   }
 
   sortList(list: Villager[], property: VillagerSortOptions): Villager[] {
@@ -149,6 +151,7 @@ export class ListComponent implements OnInit, OnDestroy {
 
   applyFilters() {
     this.accordion.close();
+    // calling .next() method on this stream will emit the new value to be picked up by our combineLatest operator
     this.filterOptions$.next(this.checkSelection);
   }
 
