@@ -6,7 +6,7 @@ import { environment } from './../environments/environment';
 import * as camelcaseKeys from '../../node_modules/camelcase-keys';
 
 
-export type VillagerSortOptions = keyof Pick<Villager, "personality" | "species" | "hobby" | "birthday">;
+export type VillagerSortOptions = keyof Pick<Villager, "personality" | "species" | "hobby" | "birthday" | "name"> ;
 
 export interface Villager {
   id: number;

@@ -1,0 +1,45 @@
+@use '~@angular/material' as mat;
+
+.sticky-header {
+    position: absolute;
+    background: #fff;
+    z-index: 5;
+    @include mat.elevation(2);
+}
+
+.grid {
+    padding-top: 40px;
+}
+.example-margin {
+    margin: 0 12px;
+}
+
+.row-margin {
+    margin: 10px 0;
+}
+
+.star {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    &:hover {
+        cursor: pointer;
+        .octicon-star {
+            color: yellow;
+        }
+    }
+}
+
+.villager-star {
+    &:hover {
+        cursor: pointer;
+        fill: #ffd055 !important;
+    }
+    &.selected {
+        fill: #ffd055 !important;
+    }
+}
+
+.card-header {
+    justify-content: space-between;
+}

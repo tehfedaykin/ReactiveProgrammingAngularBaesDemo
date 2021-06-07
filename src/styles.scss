@@ -1,4 +1,37 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap');
+
+html, body {
+    font-family: 'Assistant', sans-serif;
+}
+
+.ng-touched.ng-invalid {
+    border: solid 1px red;
+    &:not(input) {
+        border: dashed 1px red;
+    }
+}
+
+.row {
+    display: flex;
+    .col {
+      flex: 1;
+    }
+}
+.grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;;
+  mat-card {
+    border-radius: 4px;
+    flex: 1 0 20%; margin: 5px;
+    .header-image {
+      background-size: cover;
+    }
+    img {
+      max-width: 10em;
+    }
+  }
+  }
+  
