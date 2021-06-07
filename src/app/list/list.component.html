@@ -46,7 +46,7 @@
     </div>
 </div>
 <div class="grid">
-    <mat-card class="villager-card" [routerLink]="[villager.id]" *ngFor="let villager of displayedVillagers$ | async">
+    <mat-card class="villager-card" [routerLink]="[villager.id]" *ngFor="let villager of displayedVillagers">
         <mat-card-header>
             <div mat-card-avatar class="header-image" style="background-image: url({{villager.iconUri}})"></div>
             <mat-card-title>{{villager.name['name-USen']}}</mat-card-title>
