@@ -1,4 +1,4 @@
-<mat-card *ngIf="villager">
+<mat-card *ngIf="villager$ | async as villager">
     <mat-card-header>
         <mat-card-title>{{villager.name['name-USen']}}</mat-card-title>
         <mat-card-subtitle>{{villager.species}}</mat-card-subtitle>

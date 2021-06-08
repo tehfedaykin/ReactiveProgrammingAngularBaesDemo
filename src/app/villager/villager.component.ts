@@ -1,7 +1,9 @@
+import { Observable } from 'rxjs';
 import { Villager } from './../api.service';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ApiService } from '../api.service';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-villager',
@@ -9,17 +11,17 @@ import { ApiService } from '../api.service';
   styleUrls: ['./villager.component.scss']
 })
 export class VillagerComponent implements OnInit {
-  public villager!: Villager;
+  public villager$!: Observable<Villager>;
 
   constructor(private route: ActivatedRoute, private apiService: ApiService){}
 
   ngOnInit(): void {
-
-    this.route.paramMap.subscribe((params) => {
-      this.apiService.getVillager(params.get('id') as string).subscribe((res) => {
-        this.villager = res
+    this.villager$ = this.route.paramMap.pipe(
+      // switchMap will flatten the Observables AND cancel a pending request if a new one is issued
+    switchMap((params: ParamMap) => {
+        return this.apiService.getVillager(params.get('id') as string)
       })
-    })
+    )
   }
 
 }
