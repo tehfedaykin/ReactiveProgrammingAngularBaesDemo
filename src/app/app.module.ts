@@ -20,23 +20,25 @@ import { ListComponent } from './list/list.component';
 import { NavComponent } from './nav/nav.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
+import { VillagerComponent } from './villager/villager.component';
 
 const routes: Routes = [
   {
     path: 'villagers',
     component: ListComponent
   },
-  // {
-  //   path: 'villagers/:id',
-  //   component: VillagerComponent
-  // }
+  {
+    path: 'villagers/:id',
+    component: VillagerComponent
+  }
 ]
 
 @NgModule({
   declarations: [
     AppComponent,
     ListComponent,
-    NavComponent
+    NavComponent,
+    VillagerComponent
   ],
   imports: [
     BrowserModule,
